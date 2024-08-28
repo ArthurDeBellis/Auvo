@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using Auvo.Models;
+using System.Collections.Generic;
 
 namespace Auvo.Controllers
 {
@@ -19,7 +20,7 @@ namespace Auvo.Controllers
             _logger = logger;
         }
 
-        public string? LerInput()
+        public async Task<string>? LerInput()
         {
             string? caminhoDaPasta = "";
             try
@@ -39,7 +40,7 @@ namespace Auvo.Controllers
             return caminhoDaPasta;
         }
 
-        public string[] LerPasta(string? caminhoDaPasta)
+        public async Task<string[]> LerPasta(string? caminhoDaPasta)
         {
             string[] arquivos = [];
             try
@@ -57,8 +58,10 @@ namespace Auvo.Controllers
 
             return arquivos;
         }
-        public void LerArquivos(string[] arquivos)
+        public async Task<List<ArquivoCSV>> LerArquivos(string[] arquivos)
         {
+            List<ArquivoCSV> arquivosCsv = new List<ArquivoCSV>();
+
             try
             {
                 if (arquivos == null || arquivos.Length == 0)
@@ -68,7 +71,13 @@ namespace Auvo.Controllers
 
                 foreach(string arquivo in arquivos)
                 {
-                    // Configuração personalizada para o delimitador
+
+                    ArquivoCSV arquivoCSV = new ArquivoCSV();
+
+                    arquivoCSV.NomeArquivo = Path.GetFileName(arquivo);
+                    arquivoCSV.Informacoes = new List<InformacoesFuncionario>();
+
+                    
                     CsvConfiguration config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
                         Delimiter = ";",
@@ -78,21 +87,18 @@ namespace Auvo.Controllers
                     using (StreamReader reader = new StreamReader(arquivo))
                     using (CsvReader csv = new CsvReader(reader, config))
                     {
-                        // Ler registros e mapear para a classe Record
-                        IEnumerable<InformacoesFuncionario> records = csv.GetRecords<InformacoesFuncionario>();
-
-                        // Iterar sobre os registros e exibir os dados
-                        foreach (var record in records)
-                        {
-                            Console.WriteLine(record.Nome);
-                        }
+                        arquivoCSV.Informacoes = csv.GetRecords<InformacoesFuncionario>().ToList();
                     }
+
+                    arquivosCsv.Add(arquivoCSV);
                 }
             }
             catch (ArgumentNullException ex)
             {
                 _logger.LogError($"A pasta não possui arquivos: {ex.ToString()}");
-            }        
+            }
+
+            return arquivosCsv;
         }
     }
 }

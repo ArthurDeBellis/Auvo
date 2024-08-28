@@ -9,7 +9,7 @@ using CsvHelper.Configuration.Attributes;
 
 namespace Auvo.Models
 {
-    internal class InformacoesFuncionario
+    public class InformacoesFuncionario
     {
         [Name("Código")]
         public string Codigo { get; set; }

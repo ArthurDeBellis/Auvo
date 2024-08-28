@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Auvo.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace Auvo.Interfaces
 {
     public interface IFileManager
     {
-        string? LerInput();
-        string[] LerPasta(string? caminhoDaPasta);
-        void LerArquivos(string[] arquivos);
+        Task<string>? LerInput();
+        Task<string[]> LerPasta(string? caminhoDaPasta);
+        Task<List<ArquivoCSV>> LerArquivos(string[] arquivos);
     }
 }
