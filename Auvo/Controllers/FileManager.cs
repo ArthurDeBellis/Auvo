@@ -4,6 +4,7 @@ using CsvHelper;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using Auvo.Models;
+using System.Text.Json;
 
 namespace Auvo.Controllers
 {
@@ -94,6 +95,41 @@ namespace Auvo.Controllers
             }
 
             return arquivosCsv;
+        }
+
+        public async Task<string> EscreveJson(List<InformacoesDepartamento> calculoRh, string diretorio)
+        {
+            string saida = "";
+            try
+            {
+                if (!calculoRh.Any())
+                {
+                    throw new ArgumentException(nameof(calculoRh));
+                }
+                if (String.IsNullOrWhiteSpace(diretorio))
+                {
+                    throw new ArgumentException(nameof(diretorio));
+                }
+
+                JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+
+                string json = JsonSerializer.Serialize(calculoRh, jsonSerializerOptions);
+
+                File.WriteAllText($"{diretorio}/resultado.json", json);
+
+                saida = $"Arquivo salvo em {diretorio} com nome: resultado.json";
+
+            }
+            catch (ArgumentException ex) 
+            {
+                _logger.LogError($"Erro ao ler parâmetro {ex.ToString()}");
+            }
+
+            return saida;
         }
     }
 }

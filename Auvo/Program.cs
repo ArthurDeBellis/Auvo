@@ -29,8 +29,9 @@ namespace Auvo
 
                 List<InformacoesDepartamento> calculo = await calculoRh.CalcularInformacoes(informacoes);
 
-                Console.WriteLine(calculo);
+                string json = await fileManager.EscreveJson(calculo, caminhoDaPasta);
 
+                logger.LogInformation(json);
             }
             catch (Exception ex)
             {
