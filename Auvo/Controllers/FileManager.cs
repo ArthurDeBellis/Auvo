@@ -2,12 +2,8 @@
 using CsvHelper.Configuration;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Data.Common;
 using System.Globalization;
-using System.IO;
 using Auvo.Models;
-using System.Collections.Generic;
 
 namespace Auvo.Controllers
 {
@@ -49,7 +45,7 @@ namespace Auvo.Controllers
                 {
                     throw new DirectoryNotFoundException("Diretório não encontrado");
                 }
-                arquivos = Directory.GetFiles(caminhoDaPasta);
+                arquivos = Directory.GetFiles(caminhoDaPasta, "*.csv");
             }
             catch (DirectoryNotFoundException ex) 
             {
@@ -76,7 +72,6 @@ namespace Auvo.Controllers
 
                     arquivoCSV.NomeArquivo = Path.GetFileName(arquivo);
                     arquivoCSV.Informacoes = new List<InformacoesFuncionario>();
-
                     
                     CsvConfiguration config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
